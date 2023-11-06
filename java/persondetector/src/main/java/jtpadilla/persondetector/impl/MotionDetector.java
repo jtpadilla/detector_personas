@@ -1,23 +1,26 @@
 package jtpadilla.persondetector.impl;
 
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfRect;
-import org.opencv.core.Rect;
+import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.objdetect.CascadeClassifier;
+import org.opencv.videoio.VideoCapture;
+import org.opencv.videoio.Videoio;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 @Command(name = "MotionDetector", version = "MotionDetector 1.0", mixinStandardHelpOptions = true)
 public class MotionDetector implements Runnable {
 
-    @Option(names = { "-c", "--cascade-classifier" }, description = "Nombre del clasificador")
+    @Option(names = {"-c", "--cascade-classifier"}, description = "Nombre del clasificador")
     String cascadeClassifier;
 
-    @Option(names = { "-p", "--classifiers-path" }, description = "Ruta donde residen los clasificadores")
+    @Option(names = {"-p", "--classifiers-path"}, description = "Ruta donde residen los clasificadores")
     String classifiersPath;
 
     @Parameters(paramLabel = "<media files path>", arity = "1", description = "Ruta de los ficheros de video a procesar")
@@ -47,10 +50,10 @@ public class MotionDetector implements Runnable {
     }
 
     private void dispatchMedia(File videoFile) {
-        consumeMedia(videoFile);
+        consumeVideo(videoFile);
     }
 
-    private void consumeMedia(File videoFile) {
+    private void consumeImage(File videoFile) {
 
         System.out.format("Procesando fichero '%s'%n", videoFile.getAbsolutePath());
 
@@ -71,6 +74,45 @@ public class MotionDetector implements Runnable {
 
         // Guardar el video con los resultados
         // Imgcodecs.imwrite(videoFile.getPath(), video);
+
+    }
+
+
+    private void consumeVideo(File videoFile) {
+
+        System.out.format("Procesando fichero '%s'%n", videoFile.getAbsolutePath());
+
+
+        VideoCapture capture = new VideoCapture();
+        capture.open(videoFile.getAbsolutePath());
+
+        if (capture.isOpened()) {
+            double frmCount = capture.get(Videoio.CAP_PROP_FRAME_COUNT);
+            capture.
+            System.out.println("OK: frmCount = " + frmCount);
+        } else {
+            System.out.println("ERR: Capture is not opened!");
+            return;
+        }
+
+        capture.release();
+
+        // # loop over frames from the video file stream
+//        Mat img = new Mat();
+//        double fps = capture.get(Videoio.CAP_PROP_FPS);
+//        Size size = new Size(capture.get(Videoio.CAP_PROP_FRAME_WIDTH), capture.get(Videoio.CAP_PROP_FRAME_HEIGHT));
+//
+//        while (true){
+//            capture.read(img);
+//            if (img.empty())
+//                break;
+//            HashMap<String, List> result = forwardImageOverNetwork(img, dnnNet, outputLayers);
+//
+//            ArrayList<Rect2d> boxes = (ArrayList<Rect2d>)result.get("boxes");
+//            ArrayList<Float> confidences = (ArrayList<Float>) result.get("confidences");
+//            ArrayList<Integer> class_ids = (ArrayList<Integer>)result.get("class_ids");
+//
+//        }
 
     }
 
