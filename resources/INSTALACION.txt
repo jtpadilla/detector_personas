@@ -1,3 +1,5 @@
 
 
 sudo apt-get install libopencv-dev
+
+bazel run //java/persondetector:persondetector -- -p=/home/padilla/IdeaProjects/detector_personas/resources/haarcascades -c=FULLBODY /home/padilla/Videos
