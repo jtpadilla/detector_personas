@@ -1,6 +1,8 @@
 package jtpadilla.persondetector.impl;
 
-import org.opencv.core.*;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfRect;
+import org.opencv.core.Rect;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.videoio.VideoCapture;
@@ -10,9 +12,6 @@ import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 @Command(name = "MotionDetector", version = "MotionDetector 1.0", mixinStandardHelpOptions = true)
 public class MotionDetector implements Runnable {
@@ -80,8 +79,6 @@ public class MotionDetector implements Runnable {
 
     private void consumeVideo(File videoFile) {
 
-        System.out.format("Procesando fichero '%s'%n", videoFile.getAbsolutePath());
-
         // Se lee el fichero de video
         VideoCapture capture = new VideoCapture();
         try {
@@ -89,12 +86,12 @@ public class MotionDetector implements Runnable {
             // Se carga el video
             capture.open(videoFile.getAbsolutePath());
             if (!capture.isOpened()) {
-                System.err.format("El fichero '%s' no se puede procesar!%n", videoFile.getAbsolutePath());
+                System.err.format("'%s' no se puede procesar!%n", videoFile.getAbsolutePath());
             }
 
             // Se escanean sus imaganes
             ScanResult scanResult = scanImg(capture);
-            System.out.format("'%s'-->%s", videoFile.getAbsolutePath(), scanResult);
+            System.out.format("'%s'-->%s%n", videoFile.getAbsolutePath(), scanResult);
 
         } finally {
             capture.release();
