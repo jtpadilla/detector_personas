@@ -82,37 +82,53 @@ public class MotionDetector implements Runnable {
 
         System.out.format("Procesando fichero '%s'%n", videoFile.getAbsolutePath());
 
-
+        // Se lee el fichero de video
         VideoCapture capture = new VideoCapture();
-        capture.open(videoFile.getAbsolutePath());
+        try {
 
-        if (capture.isOpened()) {
-            double frmCount = capture.get(Videoio.CAP_PROP_FRAME_COUNT);
-            capture.
-            System.out.println("OK: frmCount = " + frmCount);
-        } else {
-            System.out.println("ERR: Capture is not opened!");
-            return;
+            // Se carga el video
+            capture.open(videoFile.getAbsolutePath());
+            if (!capture.isOpened()) {
+                System.err.format("El fichero '%s' no se puede procesar!%n", videoFile.getAbsolutePath());
+            }
+
+            // Se escanean sus imaganes
+            ScanResult scanResult = scanImg(capture);
+            System.out.format("'%s'-->%s", videoFile.getAbsolutePath(), scanResult);
+
+        } finally {
+            capture.release();
         }
 
-        capture.release();
+    }
 
-        // # loop over frames from the video file stream
-//        Mat img = new Mat();
-//        double fps = capture.get(Videoio.CAP_PROP_FPS);
-//        Size size = new Size(capture.get(Videoio.CAP_PROP_FRAME_WIDTH), capture.get(Videoio.CAP_PROP_FRAME_HEIGHT));
-//
-//        while (true){
-//            capture.read(img);
-//            if (img.empty())
-//                break;
-//            HashMap<String, List> result = forwardImageOverNetwork(img, dnnNet, outputLayers);
-//
-//            ArrayList<Rect2d> boxes = (ArrayList<Rect2d>)result.get("boxes");
-//            ArrayList<Float> confidences = (ArrayList<Float>) result.get("confidences");
-//            ArrayList<Integer> class_ids = (ArrayList<Integer>)result.get("class_ids");
-//
-//        }
+    record ScanResult(double frmCount, long imagesCount, boolean founf) {}
+
+    private ScanResult scanImg(VideoCapture capture) {
+
+        final double frmCount = capture.get(Videoio.CAP_PROP_FRAME_COUNT);
+        long imagesCount = 0;
+
+        // Se procesan cada una de las imaganes que lo componen
+        Mat img = new Mat();
+        while(true) {
+
+            // Se carga el siguiente frame
+            capture.read(img);
+            if (img.empty()) {
+                break;
+            }
+
+            // Se intenta detecatr objetos en el video..,
+            MatOfRect objects = new MatOfRect();
+            classifier.detectMultiScale(img, objects);
+            imagesCount++;
+            if (objects.toArray().length > 0) {
+                return new ScanResult(frmCount, imagesCount, true);
+            }
+
+        }
+        return new ScanResult(frmCount, imagesCount, false);
 
     }
 
