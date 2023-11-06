@@ -56,10 +56,14 @@ public class MotionDetector implements Runnable {
     }
 
     private void dispatchMedia(File videoFile) {
-        executor.execute(()->consumeMedia(videoFile));
+//        System.out.format("Dispatch fichero '%s'%n", videoFile.getAbsolutePath());
+        consumeMedia(videoFile);
+//        executor.execute(()->consumeMedia(videoFile));
     }
 
     private void consumeMedia(File videoFile) {
+
+        System.out.format("Procesando fichero '%s'%n", videoFile.getAbsolutePath());
 
         // Leer el archivo de video
         Mat video = Imgcodecs.imread(videoFile.getPath());
