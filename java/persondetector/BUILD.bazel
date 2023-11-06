@@ -1,0 +1,11 @@
+package(default_visibility = ["//visibility:public"])
+
+java_binary(
+    name = "persondetector",
+    srcs = glob(["src/main/java/**/*.java"]),
+    main_class = "jtpadilla.persondetector.Launcher",
+    deps = [
+        "@maven//:info_picocli_picocli",
+        "@maven//:org_openpnp_opencv",
+    ],
+)

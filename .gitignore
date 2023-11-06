@@ -1,0 +1,7 @@
+bazel-*
+.ijwb
+.clwb
+.idea
+.project
+docs/guia/target
+.~*
