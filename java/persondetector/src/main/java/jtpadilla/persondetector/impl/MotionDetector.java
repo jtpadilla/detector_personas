@@ -105,6 +105,9 @@ public class MotionDetector implements Runnable {
 
     record ScanResult(double frmCount, long imagesCount, boolean found) {}
 
+    static private final double SCALE_FACTOR = 1.05;
+    static private final int MIN_NEIGHBORS = 5;
+
     private ScanResult scanImg(VideoCapture capture) {
 
         final double frmCount = capture.get(Videoio.CAP_PROP_FRAME_COUNT);
@@ -122,7 +125,7 @@ public class MotionDetector implements Runnable {
 
             // Se intenta detecatr objetos en el video..,
             MatOfRect objects = new MatOfRect();
-            classifier.detectMultiScale(img, objects);
+            classifier.detectMultiScale(img, objects, SCALE_FACTOR, MIN_NEIGHBORS);
             imagesCount++;
             if (objects.toArray().length > 0) {
                 return new ScanResult(frmCount, imagesCount, true);
