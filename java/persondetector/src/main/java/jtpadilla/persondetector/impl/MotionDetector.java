@@ -99,7 +99,7 @@ public class MotionDetector implements Runnable {
 
     }
 
-    record ScanResult(double frmCount, long imagesCount, boolean founf) {}
+    record ScanResult(double frmCount, long imagesCount, boolean found) {}
 
     private ScanResult scanImg(VideoCapture capture) {
 
