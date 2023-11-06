@@ -4,7 +4,7 @@ import java.io.File;
 
 public class HearCascade {
 
-    enum Type {
+    public enum Type {
         FRONTALFACE_DEFAULT("haarcascade_frontalface_default.xml", "Para detectar rostros humanos"),
         EYE("haarcascade_eye.xml", "Para detectar ojos"),
         FULLBODY("haarcascade_fullbody.xml", "Para detectar cuerpos enteros"),
@@ -29,25 +29,21 @@ public class HearCascade {
 
     }
 
-    static public File file(String path, String hearCascade) throws MediaDetectorException {
-
-        final Type type = getType(hearCascade);
+    static public File file(String path, Type type) throws MediaDetectorException {
         final File result = new File(path, type.getFilename());
         if (result.exists() && result.isFile()) {
             return result;
         } else {
             throw new MediaDetectorException(String.format("El fichero '%s' no existe.", result.getAbsolutePath()));
         }
-
     }
 
-    static private Type getType(String hearCascade) throws MediaDetectorException {
+    static public Type getType(String hearCascade) throws MediaDetectorException {
         try {
             return Type.valueOf(hearCascade);
         } catch (Throwable t) {
             throw new MediaDetectorException(String.format("El tipo de cascada '%s' no esta soportado.", hearCascade));
         }
-
     }
 
 }

@@ -33,11 +33,15 @@ public class MotionDetector implements Runnable {
         try {
 
             // Cargar la clasificadora de cascada
-            File cascadeFile = HearCascade.file(classifiersPath, cascadeClassifier);
+            HearCascade.Type type = HearCascade.getType(cascadeClassifier);
+            File cascadeFile = HearCascade.file(classifiersPath, type);
             this.classifier = new CascadeClassifier(cascadeFile.getPath());
 
             // Se crea el proveedor de los ficheros que hay que analizar
             MediaProvider mediaProvider = new MediaProvider(mediaFilesPath);
+
+            // Informacion general
+            System.out.format("Se utilizara el clasificador '%s' (%s)", type, type.getDescription());
 
             // Se procesan los videos
             mediaProvider.collect(this::dispatchMedia);
