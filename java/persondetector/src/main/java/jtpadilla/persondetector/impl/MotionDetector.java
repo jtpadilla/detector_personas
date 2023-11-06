@@ -10,8 +10,6 @@ import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 import java.io.File;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 @Command(name = "MotionDetector", version = "MotionDetector 1.0", mixinStandardHelpOptions = true)
 public class MotionDetector implements Runnable {
@@ -22,22 +20,15 @@ public class MotionDetector implements Runnable {
     @Option(names = { "-p", "--classifiers-path" }, description = "Ruta donde residen los clasificadores")
     String classifiersPath;
 
-    @Option(names = { "-t", "--threads" }, description = "Numero de threads a utilizar")
-    int theads;
-
     @Parameters(paramLabel = "<media files path>", arity = "1", description = "Ruta de los ficheros de video a procesar")
     String mediaFilesPath;
 
     private CascadeClassifier classifier;
-    private Executor executor;
 
     @Override
     public void run() {
 
         try {
-
-            // Executor
-            this.executor = Executors.newFixedThreadPool(theads);
 
             // Cargar la clasificadora de cascada
             File cascadeFile = HearCascade.file(classifiersPath, cascadeClassifier);
@@ -56,9 +47,7 @@ public class MotionDetector implements Runnable {
     }
 
     private void dispatchMedia(File videoFile) {
-//        System.out.format("Dispatch fichero '%s'%n", videoFile.getAbsolutePath());
         consumeMedia(videoFile);
-//        executor.execute(()->consumeMedia(videoFile));
     }
 
     private void consumeMedia(File videoFile) {
