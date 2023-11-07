@@ -82,10 +82,14 @@ public class MotionDetectorCommand implements Runnable {
                 };
 
                 // #java21
-                if (result instanceof MotionDetectorResult.MotionDetected detected) {
-                    System.out.format("%s: DETECTADO MOVIMIENTO!", file.getAbsolutePath());
-                } else if (result instanceof MotionDetectorResult.MotionNoDetected noDetected) {
-                    System.out.format("%s: No se ha detectedo movimiento", file.getAbsolutePath());
+                if (result instanceof MotionDetectorResult.MotionDetectedInVideo detectedInVideo) {
+                    System.out.format("%s: DETECTADO MOVIMIENTO EN VIDEO (%d/%d)!", file.getAbsolutePath(), detectedInVideo.initialFrame(), detectedInVideo.totalFrames());
+                } else if (result instanceof MotionDetectorResult.MotionNoDetectedInVideo) {
+                    System.out.format("%s: No se ha detectedo movimiento en video", file.getAbsolutePath());
+                } else if (result instanceof MotionDetectorResult.MotionDetectedInPhoto) {
+                    System.out.format("%s: DETECTADO MOVIMIENTO EN FOTO", file.getAbsolutePath());
+                } else if (result instanceof MotionDetectorResult.MotionNoDetectedInPhoto) {
+                    System.out.format("%s: No se ha detectedo movimiento en foto", file.getAbsolutePath());
                 } else if (result instanceof MotionDetectorResult.UnknownFormat) {
                     System.out.format("%s: Dificultades al procesar el fichero", file.getAbsolutePath());
                 } else if (result instanceof MotionDetectorResult.UnknownExtension) {

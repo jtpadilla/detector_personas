@@ -24,7 +24,7 @@ public class MotionDetectorPhoto extends MotionDetectorAbstract {
             MatOfRect objects = new MatOfRect();
             try {
                 cascadeClassifier.detectMultiScale(img, objects, parameters.getScaleFactor(), parameters.getMinNeigbors());
-                return objects.toArray().length > 0 ? new MotionDetectorResult.MotionDetected() : new MotionDetectorResult.MotionNoDetected();
+                return objects.toArray().length > 0 ? new MotionDetectorResult.MotionDetectedInPhoto() : new MotionDetectorResult.MotionNoDetectedInPhoto();
             } finally {
                 objects.release();
             }

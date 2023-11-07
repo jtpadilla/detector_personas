@@ -40,7 +40,7 @@ public class MotionDetectorVideo extends MotionDetectorAbstract {
 
     private MotionDetectorResult scanImg(VideoCapture videoCapture) {
 
-        final DetectionRules detectionRules = new DetectionRules(videoCapture.get(Videoio.CAP_PROP_FRAME_COUNT));
+        final DetectionRules detectionRules = new DetectionRules(videoCapture);
 
         // Se procesan cada una de las imaganes que lo componen
         Mat img = new Mat();
@@ -58,7 +58,7 @@ public class MotionDetectorVideo extends MotionDetectorAbstract {
                 MatOfRect objects = new MatOfRect();
                 try {
                     cascadeClassifier.detectMultiScale(img, objects, parameters.getScaleFactor(), parameters.getMinNeigbors());
-                    Optional<MotionDetectorResult> motionDetectorResult = detectionRules.hasMotion(objects);
+                    Optional<MotionDetectorResult> motionDetectorResult = detectionRules.hasMotion(img, objects);
                     if (motionDetectorResult.isPresent()) {
                         return motionDetectorResult.get();
                     }
@@ -67,7 +67,7 @@ public class MotionDetectorVideo extends MotionDetectorAbstract {
                 }
 
             }
-            return new MotionDetectorResult.MotionNoDetected();
+            return new MotionDetectorResult.MotionNoDetectedInVideo();
 
         } finally {
             img.release();
@@ -77,17 +77,20 @@ public class MotionDetectorVideo extends MotionDetectorAbstract {
 
     static private class DetectionRules {
 
+        // Parametros iniciales (inmutables)
         final double frmCount;
+
+        // Estado
         long imagesCount = 0;
 
-        private DetectionRules(double frmCount) {
-            this.frmCount = frmCount;
+        private DetectionRules(VideoCapture videoCapture) {
+            this.frmCount = videoCapture.get(Videoio.CAP_PROP_FRAME_COUNT);
         }
 
-        public Optional<MotionDetectorResult> hasMotion(MatOfRect objects) {
+        public Optional<MotionDetectorResult> hasMotion(Mat img, MatOfRect objects) {
             imagesCount++;
             if (objects.toArray().length > 0) {
-                return Optional.of(new MotionDetectorResult.MotionDetected(imagesCount));
+                return Optional.of(new MotionDetectorResult.MotionDetectedInVideo((long) frmCount, imagesCount));
             } else {
                 return Optional.empty();
             }
