@@ -15,7 +15,7 @@ bazel run //java/persondetector:persondetector -- \\
 -p=/home/padilla/IdeaProjects/detector_personas/resources/haarcascades \\
 -c=FULLBODY \\
 -s=MIDDLE \\
-/home/padilla/Videos
+/home/padilla/Videos/test
 
 ///////////////////////////////////////////////////////
 // JAVADOC correspondiente a la version del binario.

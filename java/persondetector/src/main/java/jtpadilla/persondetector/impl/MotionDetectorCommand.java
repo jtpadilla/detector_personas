@@ -39,11 +39,11 @@ public class MotionDetectorCommand implements Runnable {
             HearCascadeParameter.Type type = HearCascadeParameter.getType(cascadeClassifierParameter);
             final File cascadeFile = HearCascadeParameter.file(classifiersPathParemeter, type);
             final CascadeClassifier cascadeClassifier = new CascadeClassifier(cascadeFile.getPath());
-            System.out.format("Se utilizara el clasificador '%s' (%s)", type, type.getDescription());
+            System.out.format("Se utilizara el clasificador '%s' (%s)%n", type, type.getDescription());
 
             // Cargar el parametro de MulstiScale
             final MultiScaleEnum multiScaleEnum = MultiScaleEnum.from(multiScaleParameter);
-            System.out.format("Se utilizaran los parametros de MultiScale '%s' (%s)", multiScaleEnum, multiScaleEnum.getDesctription());
+            System.out.format("Se utilizaran los parametros de MultiScale '%s' (%s)%n", multiScaleEnum, multiScaleEnum.getDesctription());
 
             // Se crea el proveedor de los ficheros que hay que analizar
             final MediaProvider mediaProvider = new MediaProvider(mediaFilesPathParemeter);
@@ -73,27 +73,27 @@ public class MotionDetectorCommand implements Runnable {
         private void dispatchMedia(File file) {
             Optional<String> extension = fileExtension(file);
             if (extension.isEmpty()) {
-                System.out.format("%s: No se reconoce el tipo de fichero.", file.getAbsolutePath());
+                System.out.format("%s: El fichero no tiene extension.%n", file.getAbsolutePath());
             } else {
                 MotionDetectorResult result = switch (extension.get()) {
-                    case "AVI" -> motionDetectorVideo.detect(file);
+                    case "AVI", "MP4" -> motionDetectorVideo.detect(file);
                     case "XXX" -> motionDetectorPhoto.detect(file);
                     default -> new MotionDetectorResult.UnknownExtension();
                 };
 
                 // #java21
                 if (result instanceof MotionDetectorResult.MotionDetectedInVideo detectedInVideo) {
-                    System.out.format("%s: DETECTADO MOVIMIENTO EN VIDEO (%d/%d)!", file.getAbsolutePath(), detectedInVideo.initialFrame(), detectedInVideo.totalFrames());
+                    System.out.format("%s: DETECTADO MOVIMIENTO EN VIDEO (%d/%d)!%n", file.getAbsolutePath(), detectedInVideo.initialFrame(), detectedInVideo.totalFrames());
                 } else if (result instanceof MotionDetectorResult.MotionNoDetectedInVideo) {
-                    System.out.format("%s: No se ha detectedo movimiento en video", file.getAbsolutePath());
+                    System.out.format("%s: No se ha detectedo movimiento en video%n", file.getAbsolutePath());
                 } else if (result instanceof MotionDetectorResult.MotionDetectedInPhoto) {
-                    System.out.format("%s: DETECTADO MOVIMIENTO EN FOTO", file.getAbsolutePath());
+                    System.out.format("%s: DETECTADO MOVIMIENTO EN FOTO%n", file.getAbsolutePath());
                 } else if (result instanceof MotionDetectorResult.MotionNoDetectedInPhoto) {
-                    System.out.format("%s: No se ha detectedo movimiento en foto", file.getAbsolutePath());
+                    System.out.format("%s: No se ha detectedo movimiento en foto%n", file.getAbsolutePath());
                 } else if (result instanceof MotionDetectorResult.UnknownFormat) {
-                    System.out.format("%s: Dificultades al procesar el fichero", file.getAbsolutePath());
+                    System.out.format("%s: Dificultades al procesar el fichero%n", file.getAbsolutePath());
                 } else if (result instanceof MotionDetectorResult.UnknownExtension) {
-                    System.out.format("%s: Extension del fichero no soportada", file.getAbsolutePath());
+                    System.out.format("%s: Extension del fichero no soportada%n", file.getAbsolutePath());
                 } else {
                     throw new RuntimeException("Resultado inesperado!");
                 }
