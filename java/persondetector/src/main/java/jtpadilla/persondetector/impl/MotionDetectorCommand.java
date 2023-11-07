@@ -1,7 +1,7 @@
 package jtpadilla.persondetector.impl;
 
 import jtpadilla.persondetector.impl.fs.MediaProvider;
-import jtpadilla.persondetector.impl.param.HearCascade;
+import jtpadilla.persondetector.impl.param.HearCascadeParameter;
 import jtpadilla.persondetector.impl.param.MultiScaleEnum;
 import jtpadilla.persondetector.impl.param.ParametersException;
 import jtpadilla.persondetector.impl.scan.MotionDetectorPhoto;
@@ -18,13 +18,16 @@ import java.util.Optional;
 public class MotionDetectorCommand implements Runnable {
 
     @Option(names = {"-c", "--cascade-classifier"}, description = "Nombre del clasificador")
-    String cascadeClassifier;
+    String cascadeClassifierParameter;
+
+    @Option(names = {"-s", "--multi-scale"}, description = "Parametros para el MultiScale")
+    String multiScaleParameter;
 
     @Option(names = {"-p", "--classifiers-path"}, description = "Ruta donde residen los clasificadores")
-    String classifiersPath;
+    String classifiersPathParemeter;
 
     @Parameters(paramLabel = "<media files path>", arity = "1", description = "Ruta de los ficheros de video a procesar")
-    String mediaFilesPath;
+    String mediaFilesPathParemeter;
 
     @Override
     public void run() {
@@ -32,18 +35,22 @@ public class MotionDetectorCommand implements Runnable {
         try {
 
             // Cargar la clasificadora de cascada
-            HearCascade.Type type = HearCascade.getType(cascadeClassifier);
-            File cascadeFile = HearCascade.file(classifiersPath, type);
-            CascadeClassifier classifier = new CascadeClassifier(cascadeFile.getPath());
-
-            // Se crea el proveedor de los ficheros que hay que analizar
-            MediaProvider mediaProvider = new MediaProvider(mediaFilesPath);
-
-            // Informacion general
+            HearCascadeParameter.Type type = HearCascadeParameter.getType(cascadeClassifierParameter);
+            final File cascadeFile = HearCascadeParameter.file(classifiersPathParemeter, type);
+            final CascadeClassifier cascadeClassifier = new CascadeClassifier(cascadeFile.getPath());
             System.out.format("Se utilizara el clasificador '%s' (%s)", type, type.getDescription());
 
+            // Cargar el parametro de MulstiScale
+            final MultiScaleEnum multiScaleEnum = MultiScaleEnum.from(multiScaleParameter);
+            System.out.format("Se utilizaran los parametros de MultiScale '%s' (%s)", multiScaleEnum, multiScaleEnum.getDesctription());
+
+            // Se crea el proveedor de los ficheros que hay que analizar
+            final MediaProvider mediaProvider = new MediaProvider(mediaFilesPathParemeter);
+
+            // Se instancian los clasificadores
+            final DetectorImpl detector = new DetectorImpl(cascadeClassifier, MultiScaleEnum.MIDDLE);
+
             // Se procesan los videos
-            final DetectorImpl detector = new DetectorImpl(classifier, MultiScaleEnum.MIDDLE);
             mediaProvider.collect(detector::dispatchMedia);
 
         } catch (ParametersException ex) {

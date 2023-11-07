@@ -2,7 +2,7 @@ package jtpadilla.persondetector.impl.param;
 
 import java.io.File;
 
-public class HearCascade {
+public class HearCascadeParameter {
 
     public enum Type {
         FRONTALFACE_DEFAULT("haarcascade_frontalface_default.xml", "Para detectar rostros humanos"),
