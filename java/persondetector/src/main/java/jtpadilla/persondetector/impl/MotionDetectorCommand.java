@@ -77,7 +77,7 @@ public class MotionDetectorCommand implements Runnable {
             } else {
                 MotionDetectorResult result = switch (extension.get()) {
                     case "AVI", "MP4" -> motionDetectorVideo.detect(file);
-                    case "XXX" -> motionDetectorPhoto.detect(file);
+                    case "JPG" -> motionDetectorPhoto.detect(file);
                     default -> new MotionDetectorResult.UnknownExtension();
                 };
 
