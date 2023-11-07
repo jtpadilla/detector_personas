@@ -8,6 +8,7 @@ import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
 
 import java.io.File;
+import java.util.Optional;
 
 public class MotionDetectorVideo extends MotionDetectorAbstract {
 
@@ -29,8 +30,7 @@ public class MotionDetectorVideo extends MotionDetectorAbstract {
             }
 
             // Se escanean sus imaganes
-            ScanResult scanResult = scanImg(videoCapture);
-            return new MotionDetectorResult.MotionDetected();
+            return scanImg(videoCapture);
 
         } finally {
             videoCapture.release();
@@ -38,12 +38,9 @@ public class MotionDetectorVideo extends MotionDetectorAbstract {
 
     }
 
-    record ScanResult(double frmCount, long imagesCount, boolean found) {}
+    private MotionDetectorResult scanImg(VideoCapture videoCapture) {
 
-    private ScanResult scanImg(VideoCapture videoCapture) {
-
-        final double frmCount = videoCapture.get(Videoio.CAP_PROP_FRAME_COUNT);
-        long imagesCount = 0;
+        final DetectionRules detectionRules = new DetectionRules(videoCapture.get(Videoio.CAP_PROP_FRAME_COUNT));
 
         // Se procesan cada una de las imaganes que lo componen
         Mat img = new Mat();
@@ -61,19 +58,39 @@ public class MotionDetectorVideo extends MotionDetectorAbstract {
                 MatOfRect objects = new MatOfRect();
                 try {
                     cascadeClassifier.detectMultiScale(img, objects, parameters.getScaleFactor(), parameters.getMinNeigbors());
-                    imagesCount++;
-                    if (objects.toArray().length > 0) {
-                        return new ScanResult(frmCount, imagesCount, true);
+                    Optional<MotionDetectorResult> motionDetectorResult = detectionRules.hasMotion(objects);
+                    if (motionDetectorResult.isPresent()) {
+                        return motionDetectorResult.get();
                     }
                 } finally {
                     objects.release();
                 }
 
             }
-            return new ScanResult(frmCount, imagesCount, false);
+            return new MotionDetectorResult.MotionNoDetected();
 
         } finally {
             img.release();
+        }
+
+    }
+
+    static private class DetectionRules {
+
+        final double frmCount;
+        long imagesCount = 0;
+
+        private DetectionRules(double frmCount) {
+            this.frmCount = frmCount;
+        }
+
+        public Optional<MotionDetectorResult> hasMotion(MatOfRect objects) {
+            imagesCount++;
+            if (objects.toArray().length > 0) {
+                return Optional.of(new MotionDetectorResult.MotionDetected(imagesCount));
+            } else {
+                return Optional.empty();
+            }
         }
 
     }
