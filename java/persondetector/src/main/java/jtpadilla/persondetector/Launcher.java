@@ -1,6 +1,6 @@
 package jtpadilla.persondetector;
 
-import jtpadilla.persondetector.impl.MotionDetector;
+import jtpadilla.persondetector.impl.MotionDetectorCommand;
 import picocli.CommandLine;
 
 public class Launcher {
@@ -10,7 +10,7 @@ public class Launcher {
     }
 
     public static void main(String[] args) {
-        System.exit(new CommandLine(new MotionDetector()).execute(args));
+        System.exit(new CommandLine(new MotionDetectorCommand()).execute(args));
     }
 
 }

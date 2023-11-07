@@ -1,4 +1,4 @@
-package jtpadilla.persondetector.impl;
+package jtpadilla.persondetector.impl.fs;
 
 import java.io.File;
 import java.util.function.Consumer;
