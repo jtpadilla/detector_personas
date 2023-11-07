@@ -5,6 +5,7 @@ import jtpadilla.persondetector.impl.param.HearCascadeParameter;
 import jtpadilla.persondetector.impl.param.MultiScaleEnum;
 import jtpadilla.persondetector.impl.param.ParametersException;
 import jtpadilla.persondetector.impl.scan.MotionDetectorPhoto;
+import jtpadilla.persondetector.impl.scan.MotionDetectorResult;
 import jtpadilla.persondetector.impl.scan.MotionDetectorVideo;
 import org.opencv.objdetect.CascadeClassifier;
 import picocli.CommandLine.Command;
@@ -74,16 +75,25 @@ public class MotionDetectorCommand implements Runnable {
             if (extension.isEmpty()) {
                 System.out.format("%s: No se reconoce el tipo de fichero.", file.getAbsolutePath());
             } else {
-                boolean detected = switch (extension.get()) {
+                MotionDetectorResult result = switch (extension.get()) {
                     case "AVI" -> motionDetectorVideo.detect(file);
                     case "XXX" -> motionDetectorPhoto.detect(file);
-                    default -> false;
+                    default -> new MotionDetectorResult.UnknownExtension();
                 };
-                if (detected) {
-                    System.out.format("%s: SI se ha detectado movimiento.", file.getAbsolutePath());
+
+                // #java21
+                if (result instanceof MotionDetectorResult.MotionDetected detected) {
+                    System.out.format("%s: DETECTADO MOVIMIENTO!", file.getAbsolutePath());
+                } else if (result instanceof MotionDetectorResult.MotionNoDetected noDetected) {
+                    System.out.format("%s: No se ha detectedo movimiento", file.getAbsolutePath());
+                } else if (result instanceof MotionDetectorResult.UnknownFormat) {
+                    System.out.format("%s: Dificultades al procesar el fichero", file.getAbsolutePath());
+                } else if (result instanceof MotionDetectorResult.UnknownExtension) {
+                    System.out.format("%s: Extension del fichero no soportada", file.getAbsolutePath());
                 } else {
-                    System.out.format("%s: NO ha detectado movimiento.", file.getAbsolutePath());
+                    throw new RuntimeException("Resultado inesperado!");
                 }
+
             }
         }
 

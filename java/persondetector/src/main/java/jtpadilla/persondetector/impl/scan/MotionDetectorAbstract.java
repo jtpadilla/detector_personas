@@ -15,6 +15,6 @@ abstract public class MotionDetectorAbstract {
         this.parameters = parameters;
     }
 
-    abstract public boolean detect(File file);
+    abstract public MotionDetectorResult detect(File file);
 
 }

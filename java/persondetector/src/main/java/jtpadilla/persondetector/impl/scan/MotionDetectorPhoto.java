@@ -14,9 +14,7 @@ public class MotionDetectorPhoto extends MotionDetectorAbstract {
         super(cascadeClassifier, parameters);
     }
 
-    public boolean detect(File photoFile) {
-
-        System.out.format("Procesando fichero '%s'%n", photoFile.getAbsolutePath());
+    public MotionDetectorResult detect(File photoFile) {
 
         // Leer el archivo de video
         Mat img = Imgcodecs.imread(photoFile.getPath());
@@ -26,7 +24,7 @@ public class MotionDetectorPhoto extends MotionDetectorAbstract {
             MatOfRect objects = new MatOfRect();
             try {
                 cascadeClassifier.detectMultiScale(img, objects, parameters.getScaleFactor(), parameters.getMinNeigbors());
-                return objects.toArray().length > 0;
+                return objects.toArray().length > 0 ? new MotionDetectorResult.MotionDetected() : new MotionDetectorResult.MotionNoDetected();
             } finally {
                 objects.release();
             }
@@ -36,6 +34,5 @@ public class MotionDetectorPhoto extends MotionDetectorAbstract {
         }
 
     }
-
 
 }

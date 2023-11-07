@@ -16,7 +16,7 @@ public class MotionDetectorVideo extends MotionDetectorAbstract {
     }
 
 
-    public boolean detect(File videoFile) {
+    public MotionDetectorResult detect(File videoFile) {
 
         // Se lee el fichero de video
         VideoCapture videoCapture = new VideoCapture();
@@ -25,14 +25,12 @@ public class MotionDetectorVideo extends MotionDetectorAbstract {
             // Se carga el video
             videoCapture.open(videoFile.getAbsolutePath());
             if (!videoCapture.isOpened()) {
-                System.err.format("'%s' no se puede procesar!%n", videoFile.getAbsolutePath());
-                return false;
+                return new MotionDetectorResult.UnknownFormat();
             }
 
             // Se escanean sus imaganes
             ScanResult scanResult = scanImg(videoCapture);
-            System.out.format("'%s'-->%s%n", videoFile.getAbsolutePath(), scanResult);
-            return scanResult.found();
+            return new MotionDetectorResult.MotionDetected();
 
         } finally {
             videoCapture.release();
